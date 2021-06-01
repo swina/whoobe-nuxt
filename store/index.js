@@ -99,6 +99,8 @@ export const actions = {
         commit ( 'SET_HOMEPAGE' , homepage.data[0] )
         const shop = await whoobe.service ( 'products' ).find( { query: { $limit: 200 }})
         commit ( 'SET_PRODUCTS' , shop )
+        const plugins = await whoobe.service ( 'plugins' ).find ( )
+        commit ( 'SET_PLUGINS' , plugins.data )
         //const articles = await whoobe.service ( 'articles' ).find ( { query: { $limit: 200 } } )
         //commit ( 'SET_ARTICLES' , articles.data )
     },

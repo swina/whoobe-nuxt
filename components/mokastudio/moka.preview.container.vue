@@ -5,7 +5,7 @@
         v-if="doc"
         :class="$classe(doc.css)" :style="$stile(doc) + ' ' +  $background(doc)" :ref="doc.id">
 
-        <whoobe-carousel v-if="doc.hasOwnProperty('gallery') && doc.gallery.images" :block="doc"/>
+        <!-- <whoobe-carousel v-if="doc.hasOwnProperty('gallery') && doc.gallery.images" :block="doc"/> -->
         <template v-for="(block,b) in doc.blocks">
 
             <!-- html element --> 
@@ -23,7 +23,7 @@
                 :article="$attrs.article"
                 :start="$attrs.start"
                 :limit="$attrs.limit"
-                v-if="$isMokaContainer(block,doc) && block.tag!='form'  && !block.hasOwnProperty('image_flip') && !block.hasOwnProperty('popup')" 
+                v-if="$isMokaContainer(block,doc) && block.tag != 'menu' && block.tag!='form'  && !block.hasOwnProperty('image_flip') && !block.hasOwnProperty('popup')" 
                 :doc="block"/>
 
             <!-- articles loop template (grid) -->
@@ -90,7 +90,7 @@ import MokaArticlesLoop from '@/components/mokastudio/moka.preview.container.loo
 import MokaForm from '@/components/mokastudio/moka.preview.form'
 import MokaFlipbox from './moka.flipbox'
 import MokaPopup from './moka.popup'
-import MokaPluginsWrapper from '@/components/Plugins.Wrapper'
+import MokaPluginsWrapper from '@/components/plugin.wrapper' //'@/components/Plugins.Wrapper'
 import WhoobeCarousel from '@/components/mokastudio/whoobe.preview.carousel'
 //import MokaArticlesLoop from '@/components/mokastudio/moka.preview.articles.loop'
 import { mapState } from 'vuex'

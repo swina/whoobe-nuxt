@@ -28,14 +28,21 @@ var linkFonts = process.env.FONT_FAMILIES
 if ( process.env.MULTI_SITE && process.env.MULTI_CONFIG_PATH ){
   const workspace = path.resolve ( '../workspace/' ) + '/config.js' 
   whoobeCMSURL = require ( workspace ) //process.env.MULTI_CONFIG_PATH ) 
-  linkFonts = whoobeCMSURL.fonts
-  console.log ( 'CMS => ' , whoobeCMSURL.url )
-  console.log ( 'Destination folder => ' , whoobeCMSURL.dist )
-  console.log ( 'Fonts =>' , whoobeCMSURL.fonts )
-  console.log ( 'Copy uploads folder => ' , whoobeCMSURL.uploads)
+  whoobe.service ( 'projects' ).find ( { query: { name: whoobeCMSURL.name.toString() } } ).then ( res => {
+    console.log ( 'Project to generate: => ', res )
+    whoobeCMSURL = res.data[0]
+    linkFonts = whoobeCMSURL.fonts.join('|')
+    const project = whoobeCMSURL.name.toString()
+    console.log ( 'CMS => ' , whoobeCMSURL.url.toString() )
+    console.log ( 'Destination folder => ' , whoobeCMSURL.dist.toString() )
+    console.log ( 'Fonts =>' , whoobeCMSURL.fonts.join('|').toString() )
+    console.log ( 'Copy uploads folder => ' , whoobeCMSURL.uploads.toString())
+  })
 } else {
   whoobeCMSURL = null
 }
+
+
 
 //Full Static mode and local upload copy Strapi uploads folder to static folder
 function importAssets(){
@@ -77,7 +84,7 @@ let dynamicRoutes = () => {
       })
       return articles
     }).then ( data => {
-      console.log ( 'articles=>' ,  data.length )
+      console.log ( 'articles=>' ,  data.length.toString() )
       whoobe.service('products').find({ query: { $limit: 200 }}).then ( response => { 
       //axios.get( url + 'products?$limit=200' ).then( response => {
         products = response.data.map( product => {
@@ -86,7 +93,7 @@ let dynamicRoutes = () => {
             payload: product
           }
         })
-        console.log ( 'products=>' , products.length )
+        console.log ( 'products=>' , products.length.toString()  )
         resolve ( data.concat(products) )
       })
     })

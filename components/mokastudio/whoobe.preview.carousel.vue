@@ -1,6 +1,5 @@
 <template>
     <div :id="'carousel_' + block.id"  v-if="block">
-
         <whoobe-navigation 
             v-if="block.gallery.navigation.enable" 
             :navigation="block.gallery.navigation" 
@@ -34,7 +33,6 @@ export default {
     },
     methods:{
         goTo(i){
-            console.log ( i )
             this.block.gallery.images.forEach ( (image,n) => {
                 // if ( this.block.gallery.animation.includes('fade') ){
                 //     document.querySelector ( '.carousel_' + this.block.id + '_' + n ).style.animation = ''
@@ -52,8 +50,6 @@ export default {
             el.style.animationDuration = this.block.gallery.delay + 's'
             el.style.animationTimingFunction = 'linear'
             
-            //el.style.animationIterationCount = 1
-            //el.style.animationFillMode = 'forwards'
             el.style.opacity = 1
             //el.style.zIndex = 1
             
@@ -70,7 +66,7 @@ export default {
         var bgContainer = document.querySelector('#carousel_' + block.id )
         console.log ( 'Init carousel ...' , bgContainer  )
         if ( bgContainer ){
-            bgContainer.classList.add('bg-white','absolute','bgcontainer','top-0','left-0','bottom-0','right-0','z-1')
+            bgContainer.classList.add('absolute','bgcontainer','top-0','left-0','bottom-0','right-0','z-1')
             var timing = ''
             var delay = false
             if ( !block.gallery.navigation.enable){
@@ -80,7 +76,7 @@ export default {
                 timing = '3s linear' //(parseFloat(block.gallery.delay)) + 's linear 0s'
             }
             var animation = 'imageFade'
-            block.gallery.hasOwnProperty('custom') ? 
+            block.gallery.hasOwnProperty('custom') && block.gallery.custom ? 
                 animation = block.gallery.custom :
                     block.gallery.hasOwnProperty('animation') ? 
                         animation = block.gallery.animation : 
@@ -91,7 +87,7 @@ export default {
                 container = document.createElement('div')
                 bgContainer.appendChild ( container )
 
-                container.classList.add('absolute','top-0','left-0','bottom-0','right-0','bg-cover','bg-no-repeat','bg-center', 'carousel_' + block.id + '_' + i)
+                container.classList.add('absolute','top-0','left-0','bottom-0','right-0','bg-cover','bg-no-repeat','bg-top', 'carousel_' + block.id + '_' + i)
                 
                 
 

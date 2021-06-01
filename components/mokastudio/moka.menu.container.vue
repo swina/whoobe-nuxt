@@ -8,29 +8,17 @@
        
         <template v-for="(block,b) in doc.blocks">
              
-            <!-- <moka-element
+            <moka-element
+
                 @click="elementAction"
                 v-if="block && !block.hasOwnProperty('blocks')"
                 :key="block.id"
                 :element="block"
                 :coords="[b]"
                 :refreshAnimation="refreshAnimation||$attrs.refreshAnimation"
-                :develop="false"/> -->
-
-            <moka-element
-                :article="$attrs.article"
-                v-if="$isMokaElement(block) && block.tag!='form'"
-                :key="block.id"
-                :el="block"
-                :element="block"/>
-            <!-- <moka-element
-                :article="$attrs.article"
-                v-if="$isMokaElement(block) && block.tag!='form'"
-                :key="block.id"
-                :el="block"
-                :element="block"/> -->
-
-            <moka-menu-container
+                :develop="false"/> 
+            
+            <moka-slider-container
                 v-if="block && block.hasOwnProperty('blocks') && !block.hasOwnProperty('blocks_flip')" @action="elementAction" 
                 :key="block.id"
                 :id="block.id"
@@ -58,9 +46,9 @@
 </template>
 
 <script>
-//import MokaRenderElement from '@/components/mokastudio/moka.element.component'
-import MokaFlipbox from '@/components/mokastudio/moka.flipbox'
-import MokaPluginsWrapper from '@/components/Plugins.Wrapper'
+import MokaElement from './moka.element'
+import MokaFlipbox from './moka.flipbox'
+import MokaPluginsWrapper from '@/components/plugin.wrapper'// '@/components/common/Plugins.Wrapper'
 import { mapState } from 'vuex'
 
 import gsap from 'gsap'
@@ -69,8 +57,8 @@ gsap.registerPlugin ( ScrollTrigger )
 const plugins = [ScrollTrigger];
 
 export default {
-    name: 'MokaMenuContainer',
-    components: { MokaElement :() => import('./moka.element.component')   , MokaFlipbox , MokaPluginsWrapper },
+    name: 'MokaSliderContainer',
+    components: { MokaElement  , MokaFlipbox , MokaPluginsWrapper },
     props: [ 'doc'  ],
     computed:{
         ...mapState(['moka']),

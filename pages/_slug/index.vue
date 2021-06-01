@@ -1,6 +1,6 @@
 <template>
     <div>
-        <nuxpresso-moka-template v-if="articles  && !loaded" :doc="articles.blocks.json" :article="articles"/>    
+        <nuxpresso-moka-template v-if="articles  && !loaded" :doc="articles.blocks.json" :article="articles"/>
         <div v-if="!articles" class="nuxpresso-modal w-4/5 p-4 md:p-10 rounded">
             <h1 class="text-10xl font-bold animate-bounce">404</h1>
             <h3>Ooooops the page your are looking for doesn't exists !</h3>
@@ -10,13 +10,13 @@
 </template>
 
 <script>
-//import articleQuery from '@/apollo/queries/article/articles-slug'
 import NuxpressoMokaTemplate from '@/components/mokastudio/moka.preview'
 import { mapState }  from 'vuex'
 export default {
     name: 'NuxpArticleSlug',
     components: {
         NuxpressoMokaTemplate
+        
     },
     data:()=>({
         articles: [],

@@ -28,15 +28,15 @@ export default {
         image(){
                 if ( process.env.development ){
                         let img = ''
-                        this.el.image.url.includes('http') ?
+                        this.el.image.url.includes('//') ?
                             img = this.el.image.url : 
                                 img = this.$imageURL(this.el.image)//.url.substring(1)
                         return img
                 } else {
                     if ( process.client ){
-                    return this.el.image.url.includes('http') ?
+                    return this.el.image.url.includes('//') ?
                         this.el.image.url :
-                            this.el.image.url
+                            this.$imageURL(this.el.image)
                     }
                 }
         }

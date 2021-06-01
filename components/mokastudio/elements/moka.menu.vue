@@ -1,165 +1,214 @@
 <template>
-<div>
-    <nav v-if="el.element === 'menu'" :class="menu_responsive(el) + ' z-top ' + el.css.align"> 
-        <div v-for="(item,i) in el.items" :class="el.css.css + ' cursor-pointer relative pr-4'" :key="el.id + '_' + i"> 
-            <nuxt-link :class="el.css.css" v-if="(!item.submenu || !item.submenu.length)  && item.link && !item.link.includes('http')" :to="item.link">
-                <span v-if="!item.hasOwnProperty('icon') && !item.icon" @mouseenter="menuover=-1">{{ item.label }}</span>
-                <span v-else><i :class="'bi-' + item.icon"></i></span> 
-                <i v-if="item.submenu && item.submenu.length" class="material-icons moka-icons">arrow_drop_down</i>
-            </nuxt-link>
-            
-            
-            <div v-if="item.submenu && item.submenu.length" @mouseover="menuover=i" :class="el.css.css" @click="menuover=i">
-                <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
-                <span v-else><i :class="'bi-' + item.icon"></i></span> 
-                <!-- <i v-if="item.submenu && item.submenu.length" :class="el.css.css + ' material-icons moka-icons text-sm'">arrow_drop_down</i> -->
-            </div>
+    <nav navigation :class="menuContainerCSS" class="cursor-pointer" :ref="el.id" :id="el.id" :style="background(el)">
+        <i v-if="responsive" class="material-icons burger-icon md:hidden z-highest fixed top-0 m-1 text-3xl" :class="menu_responsive?el.css.items:el.css.items"  @click="menu_responsive=!menu_responsive">{{ icon }}</i>
+        <!-- desktop -->
+        <div class="hidden md:contents relative">
+            <template v-for="(item,i) in el.blocks">
 
-            <a :class="el.css.css" target="_blank" :href="item.link" v-if="item.link.includes('http')">
-                <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
-                <span v-else><i :class="'bi-' + item.icon"></i></span>
-            </a>
-            <div v-if="!item.link">
-                <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
-                <span v-else><i :class="'bi-' + item.icon"></i></span> 
-            </div>
+                    <a v-if="item.link && item.link.includes('//') && !item.blocks.length" :href="item.link" :class="item.css">
+                            {{ item.content }}
+                    </a>
 
-            <div :ref="'submenu_'+i" submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' fixed flex flex-col z-highest'">
-                
-                <div v-if="item.submenu[0].blocks" :class="Object.values(item.submenu[0].blocks.css).join(' ')" :style="background(item.submenu[0].blocks)  + getPos(i)"  @mouseleave="menuover=-1">
-                    
-                    <template v-for="block in item.submenu[0].blocks.blocks">
+                    <nuxt-link v-if="item.link && !item.link.includes('//') && !item.blocks.length" :to="item.link" :class="item.css">
+                        {{ item.content }}
+                    </nuxt-link>
+
+                    <div v-if="!item.link && !item.blocks.length" menu-item class="relative flex flex-row items-center" :class="item.css">
+                        {{ item.content }}
+                    </div>
+
+                    <div v-if="!item.link && item.blocks.length" @click="openSub(i,$event)" :class="item.css + ' menu_item item_' + item.id" class="relative flex flex-row items-center">
                         
-                        <moka-element
-                        v-if="block && !block.hasOwnProperty('blocks') && !block.hasOwnProperty('blocks')"
-                        :key="block.id"
-                        :el="block"
-                        :data="$attrs.data||null"
-                        :currency="$attrs.currency||null"
-                        :develop="false"/>
+                        {{ item.content }}
+                        
+                        <i class="material-icons" v-if="el.hasOwnProperty('icons')">{{el.icons.submenu}}</i>
+                        <i class="material-icons" v-else>expand_more</i>
+                    </div>
 
-                        <moka-preview-single-container 
-                            v-if="block.hasOwnProperty('blocks')"
-                            :key="block.id" 
-                            :doc="block" 
-                            level="1" 
-                        />
-                    </template>
-                </div>
+
+                    <div :ref="'submenu_'+i" submenu v-if="!item.link && item.blocks && item.blocks.length" :class="isOver(i) + ' ' + el.css.submenu + ' top-0 fixed flex flex-col z-highest'" :style="overStyle(i,item.id)" @click="submenu=null">
+                        
+                        <div v-if="item.blocks[0].blocks && submenu===i" :style="getPos(i)">
+                            
+                            <template v-for="block in item.blocks">
+                                <block-preview-element
+                                v-if="block && !block.hasOwnProperty('blocks') && !block.hasOwnProperty('blocks')"
+                                :key="block.id"
+                                :el="block"
+                                :data="$attrs.data||null"
+                                :currency="$attrs.currency||null"
+                                :develop="false"/>
+
+                                <block-preview-single-container 
+                                    v-if="block.hasOwnProperty('blocks')"
+                                    :key="block.id" 
+                                    :doc="block" 
+                                    level="1" 
+                                />
+                            </template>
+                        </div>
+                        <div v-else class="flex flex-col">
+                            <template v-for="subitem in item.blocks">
+                                <a :href="subitem.link" :class="item.css">
+                                    <span>{{ subitem.content }}</span>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
                 
-                <div v-else v-for="sub in item.submenu">
-                    
-                    <nuxt-link v-if="!sub.link.includes('http')" :class="el.css.css" :to="sub.link">{{sub.label}}</nuxt-link>
-                    <a :href="sub.link" v-if="sub.link.includes('http')" :class="el.css.css">{{sub.label}}</a>
-                </div>
-            </div>
+            </template>
         </div>
-    </nav>
-    <!-- responsive -->
-    <div class="md:hidden">
-        <!--<moka-burger-menu :el="el" :items="el.items"/>-->
-    </div>
-    <!-- responsive -->
-    
-    <i :class="'material-icons moka-icons z-max fixed md:hidden top-0 right-0 m-1 ' + el.css.css" v-if="el.element === 'menu' && el.responsive" @click="showmenu" style="font-size:2rem;padding:0;">menu</i>
-    <transition :name="settings && settings.responsive_menu_transition ? settings.responsive_menu_transition : 'fade'">
-        <nav v-if="menu_show" :class="'w-screen max-w-screen ' + el.css.responsive + ' ' + settings.responsive_menu_css "> 
-            <i :class="'bi-x-circle moka-icons z-max text-2xl md:hidden fixed top-0 right-0 m-1 ' + el.css.css" v-if="el.element === 'menu' && el.responsive" @click="showmenu" style="font-size:2rem;padding:0;"></i>
-            <div v-for="(item,i) in el.items" :class="el.css.css + ' cursor-pointer relative p-1'"> 
-                
-                <nuxt-link :class="el.css.css + ' nuxpresso-menu-responsive-item'" v-if="!item.link.includes('http') && !item.link.includes('#')" :to="item.link">{{ item.label }}</nuxt-link>
-                <a :href="item.link" :class="el.css.css + ' nuxpresso-menu-responsive-item'" v-if="item.link.includes('http') || item.link.includes('#')" target="_blank">{{item.label}}</a>
-                
-                <div v-if="item.submenu && item.submenu.length" :class="el.css.css + ' ml-2 flex flex-col'"> 
-                    <div v-for="sub in item.submenu">
-                        <nuxt-link  v-if="!item.link.includes('http') && !item.link.includes('#')" :class="el.css.css + ' nuxpresso-menu-responsive-item'" :to="sub.link">{{ sub.label }}</nuxt-link>
-                        <a v-if="item.link.includes('http') || item.link.includes('#')" :class="el.css.css + ' nuxpresso-menu-responsive-item'" :href="sub.link">{{ sub.label }}</a>
+
+        <!--responsive -->
+        
+        <template menu_responsive v-if="responsive" v-for="(item,i) in el.blocks" >
+            <div v-if="responsive" class="md:hidden w-0" :class="opacity">
+                <a 
+                    v-if="item.link && item.link.includes('//') && !item.blocks.length" :href="item.link" :class="item.css">
+                        {{ item.content }}
+                </a>
+                <nuxt-link 
+                    v-if="item.link && !item.link.includes('//') && !item.blocks.length" 
+                    :to="item.link" :class="item.css">
+                    {{ item.content }}
+                </nuxt-link>
+
+                <div v-if="!item.link && item.hasOwnProperty('blocks') && item.blocks.length" @click="submenu && submenu===i?submenu=null:submenu=i" :class="el.css.responsive_items">
+                        {{ item.content }}
+                        <!-- <icon v-if="el.hasOwnProperty('icons')" :name="el.icons.submenu"/>
+                        <icon v-else name="expand_more"/> -->
+                </div>
+            </div>    
+
+                <div :ref="'submenu_'+i" submenu-responsive v-if="submenu===i && item.blocks && item.blocks.length" :class="el.css.submenu + ' absolute flex top-0 flex-col z-highest'" @click="el.css.submenu_behavior?submenu=null:submenu=null">
+                    
+                    <div v-if="item.blocks[0].blocks && submenu===i" @mouseleave="el.css.submenu_behavior?submenu=null:submenu=null" :style="getPos(i)">
+                        
+                        <template v-for="block in item.blocks">
+                            <block-preview-element
+                            v-if="block && !block.hasOwnProperty('blocks') && !block.hasOwnProperty('blocks')"
+                            :key="block.id"
+                            :el="block"
+                            :data="$attrs.data||null"
+                            :currency="$attrs.currency||null"
+                            :develop="false"/>
+
+                            <block-preview-single-container 
+                                v-if="block.hasOwnProperty('blocks')"
+                                :key="block.id" 
+                                :doc="block" 
+                                level="1" 
+                            />
+                        </template>
+                    </div>
+                    <div v-else class="flex flex-col">
+                        <template v-for="subitem in item.blocks">
+                            <a :href="subitem.link" :class="item.css">
+                                <span>{{ subitem.content }}</span>
+                            </a>
+                        </template>
                     </div>
                 </div>
-            </div>
-        </nav>
-    </transition>
+        </template>
         
-</div>
+    </nav>
 </template>
 
 <script>
-import MokaElement from '@/components/mokastudio/moka.element.component'
-import MokaPreviewSingleContainer from '@/components/mokastudio/moka.menu.container'
-import { mapState } from 'vuex'
-var gsap
+import BlockPreviewElement from '../moka.element.component'
+import BlockPreviewSingleContainer from '../moka.menu.container'
 export default {
-    name: 'WhoobeMenu',
-    components: { MokaElement , MokaPreviewSingleContainer },
+    name: 'BlockPreviewMenu',
     props: ['el'],
+    components: {
+        BlockPreviewElement,
+        BlockPreviewSingleContainer
+    },
     data:()=>({
-        opacity: 'opacity-0',
-        menuover: -1,
-        menu_show: false,
-        availableX: null,
-        availableY: null,
+        submenu: null,
+        submenu_id: null,
+        width:0,
+        menu_responsive:false,
+        responsive: false,
+        clientY: 0
     }),
     computed:{
-        ...mapState ( ['settings'] )
+        menuContainerCSS(){
+            let responsive = this.menu_responsive ? this.el.css.responsive ? this.el.css.responsive + ' w-full': 'p-0 m-0 h-0 w-0 ' + this.el.css.responsive.replaceAll('p-' , '') : this.el.css.responsive
+            this.width > 640 ? this.responsive = false : this.responsive = true
+            return this.width > 640 ? 
+                this.el.css.css + ' ' + this.el.css.container + ' ' + this.el.css.align :
+                   'fixed top-0 left-0 z-highest ' + responsive 
+        },
+        opacity(){
+            return this.menu_responsive ? 'opacity-100 w-full' : 'opacity-0 w-0'
+        },
+        icon(){
+            console.log ( this.el )
+            return 'menu'
+            // return this.menu_responsive  ? 
+            //     this.el.icons.back : 
+            //         this.el.icons.burger ? el.icons.burger : 'menu'
+        }
     },
     methods:{
-        showmenu(){
-            this.menu_show =! this.menu_show
+        background(block){
+            if ( !block || !this.menu_responsive) return ''
+            if ( block.hasOwnProperty('gallery') && !block.gallery || !block.hasOwnProperty('gallery')){ 
+                let bgImage = ''
+                block.image && block.image.url?
+                    block.image && block.image.url && block.image.url.indexOf('.mp4') < 0 ? 
+                            bgImage = ' background-image:url(' + this.$imageURL(block.image) + ');' :
+                                null  : null
+                return bgImage
+            }
+        },
+        openSub(i,e){
+            this.clientY = e.clientY + window.pageYOffset
+            this.submenu === i ? this.submenu = null : this.submenu = i
         },
         isOver(i){
-            return i < 0 ? 'opacity-0' : this.menuover === i ? 'opacity-100 height-grow' : 'opacity-0 height-grow-out'
+            return i < 0 ? 'opacity-0 invisible' : this.submenu === i ? 'opacity-100 visible' : 'opacity-0 invisible'
         },
-        menu_responsive(menu){
-            if ( menu.type === 'horizontal' && menu.responsive ) return 'hidden flex flex-col md:flex md:flex-row' 
-            if ( menu.type === 'horizontal' && !menu.responsive ) return menu.css.container
-            if ( menu.type === 'vertical' ) return 'flex flex-col'
+        overStyle(i,item_id){
+            if ( process.client ){
+                let item = document.querySelector('.item_' + item_id)
+                let top = this.clientY
+                if ( item ) top = item.getBoundingClientRect().bottom 
+                return i < 0 ? 'height:0px;' : this.submenu === i ? 'height:auto;position:fixed;top:' + top + 'px;' : 'height:0px;'
+            }
         },
-        getPos(i,e){
-            if ( this.menuover === i ) {
+        getPos(i){
+
+            if ( this.submenu === i && process.client ) {
                 let posX = this.$refs['submenu_' + i][0].getBoundingClientRect().x
                 let posY = this.$refs['submenu_' + i][0].getBoundingClientRect().y
                 let width = this.$refs['submenu_' + i][0].clientWidth
                 let height = this.$refs['submenu_' + i][0].clientHeight
-                //this.availableX = window.innerWidth
-                //let availableY = window.innerHeight
-               
-                if ( posX < 0 ){
-                    this.$refs['submenu_' + i][0].style.left = '0px' 
-                    this.$refs['submenu_' + i][0].style.transition = '' 
-                    this.$refs['submenu_' + i][0].style.transform = 'translateX(0)'
-                    console.log ( posX , width, this.$refs['submenu_' + i][0].getBoundingClientRect().x )
-                } else {
-                    if ( ( posX + width - this.availableX ) > 0 ){
-                        this.$refs['submenu_' + i][0].style.transition = ''
-                        this.$refs['submenu_' + i][0].style.transform = 'translateX(0)'
-                        this.$refs['submenu_' + i][0].style.left = (this.availableX - width) + 'px'
-                    }
+                let availableX = window.innerWidth
+                let availableY = window.innerHeight
+                if ( ( posX + width - availableX ) > 0 ){
+                    this.$refs['submenu_' + i][0].style.left = (availableX - width) + 'px'
                 }
-                if ( ( posY + height - this.availableY ) > 0 ){
+                if ( ( posY + height - availableY ) > 0 ){
                     this.$refs['submenu_' + i][0].style.transform = 'translateY(-110%)'//(availableY - height - 50 ) + 'px'
                 }
             }
         },
-        background(block){
-            if ( !block ) return ''
-            return block.hasOwnProperty('image') ?
-                //'background-image:url(' + this.$imageURL(block.image) + ')' : ''
-                block.image && block.image.url ? 
-                        ' background-image:url(' + this.$imageURL(block.image) + ');' :
-                             ''  : ''
-        },
     },
     mounted(){
-        gsap = this.$animation(this.el,this.el.id,this.$refs)
-        this.availableX = window.innerWidth
-        this.availableY = window.innerHeight
-        window.addEventListener('resize',()=> {
-            this.availableX = window.innerWidth
-            this.availableY = window.innerHeight
+        this.width = window.innerWidth
+        window.addEventListener('resize',()=>{
+            this.width = window.innerWidth
         })
-    },
-    beforeDestroy(){
-        if ( gsap ) gsap.timeline().kill()
+        window.addEventListener('scroll',()=>{
+            this.clientY = this.clientY + window.pageYOffset
+        })
+        let menu_item = document.querySelector('.menu_item') 
+        if ( menu_item ){
+            this.clientY = menu_item.getBoundingClientRect().bottom
+        }
+
     }
 }
 </script>

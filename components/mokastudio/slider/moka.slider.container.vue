@@ -1,5 +1,6 @@
 <template>
     <div
+        
         :id="doc && doc.hasOwnProperty('anchor')? doc.anchor : doc.id"
         v-if="doc"
         :animateMe="refreshAnimation"  

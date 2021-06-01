@@ -37,7 +37,6 @@ export default {
   computed: {
     ...mapState( ['settings','homepage'] ),
   },
-  
   /*
   async asyncData({app}){
     const data  = await app.apolloProvider.defaultClient.query({

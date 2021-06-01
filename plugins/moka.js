@@ -7,7 +7,7 @@ Vue.component('moka-store',MokaStore)
 import feathers  from '@feathersjs/feathers' 
 import socketio from '@feathersjs/socketio-client' 
 import io from 'socket.io-client' 
-const socket = io( 'http://localhost:3030', //process.env.VUE_APP_APISERVER,
+const socket = io( process.env.strapiBaseUri,
   {
     transports: ['websocket']
   }
@@ -80,7 +80,7 @@ function imageURL ( image ){
     //return image.url
     let url = ''
         image.url ? 
-            !image.url.includes('http') ? 
+            !image.url.includes('//') ? 
                 !process.env.development ?
                     url = image.url : 
                         url = process.env.strapiBaseUri + image.url.substring(1) :
@@ -142,7 +142,7 @@ Vue.prototype.$cssResponsive = ( classe = '') => {
             if (  pixelsAttrs[key] ){
                 if ( css != 'm-auto'){
                     let value = pixels.indexOf ( parseInt(css.split('-')[1])*4 )
-                    let rval = value > 5 ? pixels[value-5]/4 : 1
+                    let rval = value > 8 ? pixels[value-8]/4 : 1
                     responsiveCss += ' ' + key + '-' + parseInt(rval) + ' md:' + css
                 } else {
                     responsiveCss += ' m-auto'

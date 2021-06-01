@@ -27,7 +27,7 @@
 
             <img v-if="el.tag === 'article' && el.label==='image' && $attrs.article.featured_image" :src="$attrs.article.featured_image" :class="$classe(el.css)"/>
 
-            <img v-if="el.element === 'img' && el.image && el.image.url && el.image.ext != '.svg' && el.image.ext != '.mp4'" :src="el.image.url" :caption="el.image.caption" :alt="el.image.alternative_text" :class="$classe(el.css)"/>
+            <img v-if="el.element === 'img' && el.image && el.image.url && el.image.ext != '.svg' && el.image.ext != '.mp4'" :src="$imageURL(el.image)" :caption="el.image.caption" :alt="el.image.alternative_text" :class="$classe(el.css)"/>
             
             <div v-if="(el.element === 'img')  && el.image && el.image.ext === '.svg'" :class="$classe(el.css) + ' fill-current'">     
                 <simple-svg :src="el.image.url" width="100%" height="100%"/>
