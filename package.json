@@ -20,7 +20,7 @@
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/recaptcha": "^0.6.2",
     "alloyfinger": "^0.1.16",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "fs-extra": "^9.1.0",
     "gsap": "^3.5.1",
     "nuxt": "^2.13.0",
