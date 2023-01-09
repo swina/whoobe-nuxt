@@ -16,7 +16,7 @@
   "dependencies": {
     "@feathersjs/feathers": "^4.5.11",
     "@feathersjs/socketio-client": "^4.5.11",
-    "socket.io-client": "1.7.3",
+    "socket.io-client": "2.1.0",
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/recaptcha": "^0.6.2",
     "alloyfinger": "^0.1.16",
